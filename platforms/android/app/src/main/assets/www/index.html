@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<!--
+This is an app that demonstrates how to control an Arduino101 board
+using BLE (Bluetooth Low Energy).
+-->
+<head>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, user-scalable=no
+		initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+
+	<title>DMP LIGHT</title>
+
+	<style>
+		@import 'app/ui/css/evothings-app.css';
+	</style>
+
+	<script>
+	// Redirect console.log to Evothings Workbench.
+	if (window.hyper && window.hyper.log) { console.log = hyper.log }
+	window.onerror = function(msg, url, line)
+	{
+		console.log(msg + ": " + url + ":" + line);
+	};
+	</script>
+
+	<script src="cordova.js"></script>
+	<script src="app/libs/jquery/jquery.js"></script>
+	<script src="app/libs/evothings/evothings.js"></script>
+	<script src="app/libs/evothings/ui/ui.js"></script>
+	<script src="app/libs/evothings/arduinoble/arduinoble.js"></script>
+
+</head>
+
+<body ontouchstart=""><!-- ontouchstart="" enables low-delay CSS transitions. -->
+
+	<header>
+		<button class="back" onclick="history.back()">
+			
+		</button>
+
+		<img class="logotype" src="app/ui/images/logo.svg" alt="Evothings" />
+
+		<!--<button class="menu" onclick=""><img src="app/ui/images/menu.svg" /></button>-->
+	</header>
+	<h1>Dynamic Multiprotocol Light</h1>
+	<h1>LUẬN VĂN TỐT NGHIỆP</h1>
+	<h2>GVHD:PhD.Võ Quế Sơn</h2>
+	<h3>Thực hiện:</h3>
+	<h4>Nguyễn Hữu Nghị</h4>
+	<h5>Phạm Trần Bá Nghĩa</h5>
+	
+
+	<p id="info">Initializing...</p>
+
+	<button class="yellow wide" onclick="app.connect()">CONNECT</button>
+
+	<br />
+
+	<button class="green wide big" onclick="app.ledOn()">LED ON</button>
+
+	<br />
+
+	<button class="red wide big" onclick="app.ledOff()">LED OFF</button>
+
+	<script>
+	// Application object.
+	var app = {}
+
+	// Connected device.
+	app.device = null;
+
+	// Turn on LED.
+	app.ledOn = function()
+	{
+		app.device && app.device.writeDataArray(new Uint8Array([1]), '76e137ac-b15f-49d7-9c4c-e278e6492ad9');
+	}
+
+	// Turn off LED.
+	app.ledOff = function()
+	{
+		app.device && app.device.writeDataArray(new Uint8Array([0]), '76e137ac-b15f-49d7-9c4c-e278e6492ad9');
+	}
+
+	app.showMessage = function(info)
+	{
+		document.getElementById('info').innerHTML = info
+	};
+
+	// Called when BLE and other native functions are available.
+	app.onDeviceReady = function()
+	{
+		app.showMessage('Touch the connect button to begin.');
+	};
+
+	app.connect = function()
+	{
+		evothings.arduinoble.close();
+		
+		app.showMessage('Connecting...');
+
+		evothings.arduinoble.connect(
+			'DMP8B1C', // Advertised name of BLE device.
+			function(device)
+			{
+				app.device = device;
+				app.showMessage('Connected! Touch buttons to turn LED on/off.');
+			},
+			function(errorCode)
+			{
+				app.showMessage('Connect error: ' + errorCode + '.');
+			});
+	};
+
+	document.addEventListener(
+		'deviceready',
+		function() { evothings.scriptsLoaded(app.onDeviceReady) },
+		false);
+	</script>
+
+</body>
+
+</html>
